@@ -2,7 +2,7 @@
 /**
  * @package		J2XML
  * @subpackage	plg_j2xml_users
- * @version		3.0.0
+ * @version		3.0.2
  *
  * @author		Helios Ciancio <info@eshiol.it>
  * @link		http://www.eshiol.it
@@ -14,6 +14,14 @@
  * other free or open source software licenses.
  */
 ?>
+
+---------------------- 3.0.2 Release  [3-September-2016] ----------------------
+
+3-September-2016
+  # set password (build 2)
+
+25-May-2016
+  - script (build 2)
 
 ------------------------- 3.0.1 Release [25-May-2016] -------------------------
 

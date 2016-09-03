@@ -130,11 +130,11 @@ class plgJ2xmlUsers extends JPlugin
 				$xml .= "\t\t<name><![CDATA[".$item[$cols['name']]."]]></name>\n";
 				$xml .= "\t\t<username><![CDATA[".$item[$cols['username']]."]]></username>\n";
 				$xml .= "\t\t<email><![CDATA[".$item[$cols['email']]."]]></email>\n";
-				if (isset($cols['password']) && isset($item[$cols['password']]))
+				if (isset($cols['password']) && isset($item[$cols['password']]) && $item[$cols['password']])
 				{
 					$xml .= "\t\t<password><![CDATA[{$item[$cols['password']]}]]></password>\n";
 				}
-				elseif (isset($cols['password_clear']) && isset($item[$cols['password_clear']]))
+				elseif (isset($cols['password_clear']) && isset($item[$cols['password_clear']]) && $item[$cols['password_clear']])
 				{
 					$xml .= "\t\t<password_clear><![CDATA[{$item[$cols['password_clear']]}]]></password_clear>\n";
 				}
