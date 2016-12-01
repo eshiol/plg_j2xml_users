@@ -1,6 +1,6 @@
 <?php
 /**
- * @version		3.0.1 plugins/j2xml/users/users.php
+ * @version		3.6.3 plugins/j2xml/users/users.php
  * 
  * @package		J2XML
  * @subpackage	plg_j2xml_users
@@ -37,23 +37,34 @@ class plgJ2xmlUsers extends JPlugin
 	protected $autoloadLanguage = true;
 	
 	/**
-	 * CONSTRUCTOR
-	 * 
-	 * @param object $subject The object to observe
-	 * @param object $config  The object that holds the plugin parameters
+	 * Constructor
+	 *
+	 * @param  object  $subject  The object to observe
+	 * @param  array   $config   An array that holds the plugin configuration
 	 */
 	function __construct(&$subject, $config)
 	{
-		parent::__construct($subject, $config);		
-
-		if ($this->params->get('debug') || (defined('JDEBUG') && JDEBUG))
+		parent::__construct($subject, $config);
+	
+		if ($this->params->get('debug') || defined('JDEBUG') && JDEBUG)
 		{
-			JLog::addLogger(array('text_file' => 'j2xml.php', 'extension' => 'plg_j2xml_users'), JLog::ALL, array('plg_j2xml_users'));
+			JLog::addLogger(array('text_file' => $this->params->get('log', 'eshiol.log.php'), 'extension' => 'plg_j2xml_users_file'), JLog::ALL, array('plg_j2xml_users'));
 		}
-		JLog::addLogger(array('logger' => 'messagequeue', 'extension' => 'plg_j2xml_users'), JLOG::ALL & ~JLOG::DEBUG, array('plg_j2xml_users'));
-		JLog::add(__METHOD__, JLog::DEBUG, 'plg_j2xml_users');
+		if (PHP_SAPI == 'cli')
+		{
+			JLog::addLogger(array('logger' => 'echo', 'extension' => 'plg_j2xml_users'), JLOG::ALL & ~JLOG::DEBUG, array('plg_j2xml_users'));
+		}
+		else
+		{
+			JLog::addLogger(array('logger' => (null !== $this->params->get('logger')) ?$this->params->get('logger') : 'messagequeue', 'extension' => 'plg_j2xml_users'), JLOG::ALL & ~JLOG::DEBUG, array('plg_j2xml_users'));
+			if ($this->params->get('phpconsole') && class_exists('JLogLoggerPhpconsole'))
+			{
+				JLog::addLogger(['logger' => 'phpconsole', 'extension' => 'plg_j2xml_users_phpconsole'],  JLOG::DEBUG, array('plg_j2xml_users'));
+			}
+		}
+		JLog::add(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users');
 	}
-
+	
 	/**
 	 * Runs on content preparation
 	 *

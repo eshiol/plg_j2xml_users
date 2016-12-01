@@ -2,7 +2,7 @@
 /**
  * @package		J2XML
  * @subpackage	plg_j2xml_users
- * @version		3.0.2
+ * @version		3.6.3
  *
  * @author		Helios Ciancio <info@eshiol.it>
  * @link		http://www.eshiol.it
@@ -14,6 +14,11 @@
  * other free or open source software licenses.
  */
 ?>
+
+----------------------- 3.6.3 Release [1-December-2016] -----------------------
+
+1-December-2016
+  + PHP Console (build 3)
 
 ---------------------- 3.0.2 Release  [3-September-2016] ----------------------
 
