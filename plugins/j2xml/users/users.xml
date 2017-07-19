@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="j2xml" method="upgrade">
+<extension version="3.0" type="plugin" group="j2xml" method="upgrade">
   <name>PLG_J2XML_USERS</name>
   <author>Helios Ciancio</author>
-  <creationDate>December 2016</creationDate>
-  <copyright>(C) 2016 Helios Ciancio. All rights reserved.</copyright>
+  <creationDate>July 2017</creationDate>
+  <copyright>(C) 2016, 2017 Helios Ciancio. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL v3</license>
   <authorEmail>info@eshiol.it</authorEmail>
   <authorUrl>www.eshiol.it</authorUrl>
-  <version>3.6.3.47</version>
+  <version>3.7.4.54</version>
   <description>PLG_J2XML_USERS_XML_DESCRIPTION</description>
+  <updateservers>
+    <server type="extension" priority="2" name="Users for J2XML">https://www.eshiol.it/files/plg_j2xml_users/plg_j2xml_users.xml</server>
+  </updateservers>
+  <scriptfile>enable.php</scriptfile>
   <files>
     <filename plugin="users">users.php</filename>
   </files>
@@ -18,6 +22,9 @@
     <language tag="it-IT">it-IT/it-IT.plg_j2xml_users.ini</language>
     <language tag="it-IT">it-IT/it-IT.plg_j2xml_users.sys.ini</language>
   </languages>
+  <media destination="plg_j2xml_users" folder="media">
+    <folder>js</folder>
+  </media>
   <config>
     <fields name="params">
       <fieldset name="basic">
@@ -28,6 +35,8 @@
           <option value="1">JYES</option>
           <option value="0">JNO</option>
         </field>
+      </fieldset>
+      <fieldset name="advanced">
         <field name="debug" type="radio" default="0" class="btn-group btn-group-yesno" description="PLG_J2XML_USERS_DEBUG_SYSTEM_DESC" label="PLG_J2XML_USERS_DEBUG_SYSTEM_LABEL">
           <option value="1">JYES</option>
           <option value="0">JNO</option>
