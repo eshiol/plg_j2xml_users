@@ -60,7 +60,7 @@ eshiol.j2xml.convert.push(function(xml)
 	if (versionCompare(eshiol.j2xml.version, eshiol.j2xml.users.requires) < 0)
 	{
 		eshiol.renderMessages({
-			'error': ['Users 1.5 for J2XML v'+eshiol.j2xml.users.version+' requires J2XML v3.7.173']
+			'error': ['Users for J2XML v'+eshiol.j2xml.users.version+' requires J2XML v3.7.173']
 		});
 		return false;
 	}
