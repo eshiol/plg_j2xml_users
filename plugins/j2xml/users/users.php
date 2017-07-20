@@ -267,10 +267,20 @@ class plgJ2xmlUsers extends JPlugin
 		if (($option == 'com_j2xml') && (!$view || $view == 'cpanel'))
 		{
 			$doc = JFactory::getDocument();
-			JLog::add(new JLogEntry('loading CSVToArray.min.js...', JLOG::DEBUG, 'plg_j2xml_users'));
-			$doc->addScript("../media/plg_j2xml_users/js/CSVToArray.min.js");
-			JLog::add(new JLogEntry('loading j2xml.js...', JLOG::DEBUG, 'plg_j2xml_users'));
-			$doc->addScript("../media/plg_j2xml_users/js/j2xml.js");
+			if ($this->params->get('debug') || defined('JDEBUG') && JDEBUG)
+			{
+				JLog::add(new JLogEntry('loading CSVToArray.js...', JLOG::DEBUG, 'plg_j2xml_users'));
+				$doc->addScript("../media/plg_j2xml_users/js/CSVToArray.js");
+				JLog::add(new JLogEntry('loading j2xml.js...', JLOG::DEBUG, 'plg_j2xml_users'));
+				$doc->addScript("../media/plg_j2xml_users/js/j2xml.js");
+			}
+			else
+			{
+				JLog::add(new JLogEntry('loading CSVToArray.min.js...', JLOG::DEBUG, 'plg_j2xml_users'));
+				$doc->addScript("../media/plg_j2xml_users/js/CSVToArray.min.js");
+				JLog::add(new JLogEntry('loading j2xml.min.js...', JLOG::DEBUG, 'plg_j2xml_users'));
+				$doc->addScript("../media/plg_j2xml_users/js/j2xml.min.js");
+			}
 		}
 		return true;
 	}

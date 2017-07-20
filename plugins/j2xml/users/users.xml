@@ -7,7 +7,7 @@
   <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL v3</license>
   <authorEmail>info@eshiol.it</authorEmail>
   <authorUrl>www.eshiol.it</authorUrl>
-  <version>3.7.5.58</version>
+  <version>3.7.5.59</version>
   <description>PLG_J2XML_USERS_XML_DESCRIPTION</description>
   <updateservers>
     <server type="extension" priority="2" name="Users for J2XML">https://www.eshiol.it/files/plg_j2xml_users/plg_j2xml_users.xml</server>
