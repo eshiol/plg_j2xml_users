@@ -1,21 +1,21 @@
 <?php
 /**
- * @version		3.7.4 plugins/j2xml/users/users.php
- * 
- * @package		J2XML
- * @subpackage	plg_j2xml_users
- * @since		3.0.0
- *
- * @author		Helios Ciancio <info@eshiol.it>
- * @link		http://www.eshiol.it
- * @copyright	Copyright (C) 2013, 2017 Helios Ciancio. All Rights Reserved
- * @license		http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL v3
- * J2XML is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License 
- * or other free or open source software licenses.
- */
- 
+ * @version		3.7.5 plugins/j2xml/users/users.php
+*
+* @package		J2XML
+* @subpackage	plg_j2xml_users
+* @since		3.0.0
+*
+* @author		Helios Ciancio <info@eshiol.it>
+* @link		http://www.eshiol.it
+* @copyright	Copyright (C) 2013, 2017 Helios Ciancio. All Rights Reserved
+* @license		http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL v3
+* J2XML is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License
+* or other free or open source software licenses.
+*/
+
 // no direct access
 defined('_JEXEC') or die('Restricted access.');
 
@@ -35,7 +35,7 @@ class plgJ2xmlUsers extends JPlugin
 	 * @var    boolean
 	 */
 	protected $autoloadLanguage = true;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -45,26 +45,28 @@ class plgJ2xmlUsers extends JPlugin
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
-	
+
 		if ($this->params->get('debug') || defined('JDEBUG') && JDEBUG)
 		{
 			JLog::addLogger(array('text_file' => $this->params->get('log', 'eshiol.log.php'), 'extension' => 'plg_j2xml_users_file'), JLog::ALL, array('plg_j2xml_users'));
 		}
+
 		if (PHP_SAPI == 'cli')
 		{
 			JLog::addLogger(array('logger' => 'echo', 'extension' => 'plg_j2xml_users'), JLOG::ALL & ~JLOG::DEBUG, array('plg_j2xml_users'));
 		}
 		else
 		{
-			JLog::addLogger(array('logger' => $this->params->get('logger', 'messagequeue'), 'extension' => 'plg_j2xml_importer15'), JLOG::ALL & ~JLOG::DEBUG, array('plg_j2xml_importer15'));
+			JLog::addLogger(array('logger' => $this->params->get('logger', 'messagequeue'), 'extension' => 'plg_j2xml_users'), JLOG::ALL & ~JLOG::DEBUG, array('plg_j2xml_users'));
 			if ($this->params->get('phpconsole') && class_exists('JLogLoggerPhpconsole'))
 			{
 				JLog::addLogger(array('logger' => 'phpconsole', 'extension' => 'plg_j2xml_users_phpconsole'),  JLOG::DEBUG, array('plg_j2xml_users'));
 			}
 		}
-		JLog::add(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users');
+
+		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
 	}
-	
+
 	/**
 	 * Runs on content preparation
 	 *
@@ -75,7 +77,7 @@ class plgJ2xmlUsers extends JPlugin
 	 */
 	public function onContentPrepareData($context, &$data)
 	{
-		JLog::add(__METHOD__, JLog::DEBUG, 'plg_j2xml_users');
+		JLog::add(new JLogEntry(__METHOD__, JLog::DEBUG, 'plg_j2xml_users'));
 
 		if (version_compare(J2XMLVersion::getFullVersion(), '17.7.300') == -1)
 		{
@@ -90,12 +92,12 @@ class plgJ2xmlUsers extends JPlugin
 			JLog::add('XML file', JLog::DEBUG, 'plg_j2xml_users');
 			return true;
 		}
-		
+
 		// Rearrange this array to change the search priority of delimiters
 		$delimiters = array(
-			'tab'       => "\t",
-			'semicolon' => ";",
-			'colon'     => ","
+				'tab'       => "\t",
+				'semicolon' => ";",
+				'colon'     => ","
 		);
 		$lines = explode(PHP_EOL, $data);
 		$line = array();
@@ -118,12 +120,12 @@ class plgJ2xmlUsers extends JPlugin
 			return true;
 		}
 		JLog::add('CSV format: '.print_r($cols, true), JLog::DEBUG, 'plg_j2xml_users');
-		
+
 		$new_usertype = $this->params->get('new_usertype',
-			JComponentHelper::getParams('com_users')->get('new_usertype')
-			);
+				JComponentHelper::getParams('com_users')->get('new_usertype')
+				);
 		JLog::add('new usertype: '.$new_usertype, JLog::DEBUG, 'plg_j2xml_users');
-		
+
 		$xml = '';
 		foreach ($lines as $line)
 		{
@@ -131,7 +133,7 @@ class plgJ2xmlUsers extends JPlugin
 			{
 				JLog::add('line: '.$line, JLog::DEBUG, 'plg_j2xml_users');
 				$item = str_getcsv($line, $delimiter);
-				
+
 				foreach ($cols as $k => $v)
 				{
 					JLog::add($k.': '.$item[$v], JLog::DEBUG, 'plg_j2xml_users');
@@ -221,20 +223,20 @@ class plgJ2xmlUsers extends JPlugin
 				{
 					$xml .= "\t\t<group>{$new_usertype}</group>\n";
 				}
-				
+
 				$xml .= "\t</user>\n";
 			}
 		}
 
 		$xml =
-			'<?xml version="1.0" encoding="UTF-8" ?>' . "\n"
-			.'<j2xml version="'.J2XMLVersion::$DOCVERSION.'">' . "\n"
-			.$xml
-			.'</j2xml>';
+		'<?xml version="1.0" encoding="UTF-8" ?>' . "\n"
+				.'<j2xml version="'.J2XMLVersion::$DOCVERSION.'">' . "\n"
+						.$xml
+						.'</j2xml>';
 
-		$data = $xml;
-		JLog::add('xml: '.$xml, JLog::DEBUG, 'plg_j2xml_users');
-		return true;
+						$data = $xml;
+						JLog::add(new JLogEntry('xml: '.$xml, JLog::DEBUG, 'plg_j2xml_users'));
+						return true;
 	}
 
 
@@ -245,27 +247,31 @@ class plgJ2xmlUsers extends JPlugin
 	 */
 	public function onAfterDispatch()
 	{
+		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
+
 		$app = JFactory::getApplication();
-		if($app->getName() != 'administrator') {
+		if ($app->getName() != 'administrator')
+		{
 			return true;
 		}
-	
+
 		$enabled = JComponentHelper::getComponent('com_j2xml', true);
 		if (!$enabled->enabled)
+		{
 			return true;
-	
-			$option = JRequest::getVar('option');
-			$view = JRequest::getVar('view');
-	
-			http://j364t.eshiol.it/administrator/index.php?option=com_j2xml&view=cpanel
-	
-			if (($option == 'com_j2xml') && (!$view || $view == 'cpanel'))
-			{
-				$doc = JFactory::getDocument();
-				$doc->addScript("../media/plg_j2xml_users/js/CSVToArray.min.js");
-				$doc->addScript("../media/plg_j2xml_users/js/j2xml.js");
-			}
-			return true;
+		}
+
+		$option = JRequest::getVar('option');
+		$view = JRequest::getVar('view');
+
+		if (($option == 'com_j2xml') && (!$view || $view == 'cpanel'))
+		{
+			$doc = JFactory::getDocument();
+			JLog::add(new JLogEntry('loading CSVToArray.min.js...', JLOG::DEBUG, 'plg_j2xml_users'));
+			$doc->addScript("../media/plg_j2xml_users/js/CSVToArray.min.js");
+			JLog::add(new JLogEntry('loading j2xml.js...', JLOG::DEBUG, 'plg_j2xml_users'));
+			$doc->addScript("../media/plg_j2xml_users/js/j2xml.js");
+		}
+		return true;
 	}
 }
-	
