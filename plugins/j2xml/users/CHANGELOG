@@ -1,3 +1,15 @@
+------------------------ 3.7.7 Release [3-August-2018] ------------------------
+
+3-August-2018
+  ^ copyright (build 7)
+  ^ plugin name (build 7)
+  + import user fields (build 7)
+
+------------------------ 3.7.6 Release  [6-April-2018] ------------------------
+
+6-April-2018
+  ^ load js only if you need it (build 6)
+
 ------------------------ 3.7.5 Release  [20-July-2017] ------------------------
 
 20-July-2017
