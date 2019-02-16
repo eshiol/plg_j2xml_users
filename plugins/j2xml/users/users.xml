@@ -10,7 +10,7 @@
   <version>3.7.9.87</version>
   <description>PLG_J2XML_USERS_XML_DESCRIPTION</description>
   <updateservers>
-    <server type="extension" priority="2" name="J2XML - Users">https://www.eshiol.it/files/j2xml37/plg_j2xml_users.xml</server>
+    <server type="extension" priority="2" name="J2XML - Users">https://www.eshiol.it/files/plg_j2xml_users/update.xml</server>
   </updateservers>
   <scriptfile>enable.php</scriptfile>
   <files>
