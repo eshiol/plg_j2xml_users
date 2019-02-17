@@ -144,6 +144,28 @@ eshiol.j2xml.convert
 					x += "\t\t<password_clear><![CDATA[" + password_clear
 							+ "]]></password_clear>\n";
 				}
+				x += "\t\t<requireReset>";
+				if (cols['requireReset'] != undefined)
+				{
+					x += eshiol.j2xml.users.requireReset;
+				}
+				else if (cols['requireReset'] == null)
+				{
+					x += eshiol.j2xml.users.requireReset;
+				}
+				else if (cols['requireReset'] == 0)
+				{
+					x += 0;
+				}
+				else if (cols['requireReset'] == 1)
+				{
+					x += 1;
+				}
+				else
+				{
+					x += eshiol.j2xml.users.requireReset;
+				}
+				x += "</requireReset>\n";
 				x += "\t\t<block>0</block>\n";
 				x += "\t\t<sendEmail>0</sendEmail>\n";
 				x += "\t\t<registerDate><![CDATA[" + (new Date().toString())

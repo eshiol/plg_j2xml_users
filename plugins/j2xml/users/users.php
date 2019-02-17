@@ -53,44 +53,51 @@ class plgJ2xmlUsers extends JPlugin
 	 * @param array $config
 	 *        	An array that holds the plugin configuration
 	 */
-	function __construct(&$subject, $config)
+	function __construct (&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 		
-		if ($this->params->get('debug', JComponentHelper::getParams('com_j2xml')->get('debug', 0)) || defined('JDEBUG') && JDEBUG) {
+		if ($this->params->get('debug', JComponentHelper::getParams('com_j2xml')->get('debug', 0)) || defined('JDEBUG') && JDEBUG)
+		{
 			JLog::addLogger(array(
-				'text_file' => $this->params->get('log', 'eshiol.log.php'),
-				'extension' => 'plg_j2xml_users_file'
+					'text_file' => $this->params->get('log', 'eshiol.log.php'),
+					'extension' => 'plg_j2xml_users_file'
 			), JLog::ALL, array(
-				'plg_j2xml_users'
+					'plg_j2xml_users'
 			));
 		}
 		
-		if (PHP_SAPI == 'cli') {
+		if (PHP_SAPI == 'cli')
+		{
 			JLog::addLogger(array(
-				'logger' => 'echo',
-				'extension' => 'plg_j2xml_users'
+					'logger' => 'echo',
+					'extension' => 'plg_j2xml_users'
 			), JLOG::ALL & ~ JLOG::DEBUG, array(
-				'plg_j2xml_users'
-			));
-		} else {
-			JLog::addLogger(array(
-				'logger' => $this->params->get('logger', 'messagequeue'),
-				'extension' => 'plg_j2xml_users'
-			), JLOG::ALL & ~ JLOG::DEBUG, array(
-				'plg_j2xml_users'
-			));
-			if ($this->params->get('phpconsole') && class_exists('JLogLoggerPhpconsole')) {
-				JLog::addLogger(array(
-					'logger' => 'phpconsole',
-					'extension' => 'plg_j2xml_users_phpconsole'
-				), JLOG::DEBUG, array(
 					'plg_j2xml_users'
+			));
+		}
+		else
+		{
+			JLog::addLogger(array(
+					'logger' => $this->params->get('logger', 'messagequeue'),
+					'extension' => 'plg_j2xml_users'
+			), JLOG::ALL & ~ JLOG::DEBUG, array(
+					'plg_j2xml_users'
+			));
+			if ($this->params->get('phpconsole') && class_exists('JLogLoggerPhpconsole'))
+			{
+				JLog::addLogger(array(
+						'logger' => 'phpconsole',
+						'extension' => 'plg_j2xml_users_phpconsole'
+				), JLOG::DEBUG, array(
+						'plg_j2xml_users'
 				));
 			}
 		}
 		
 		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
+		
+		JFactory::getDocument()->addScriptDeclaration('eshiol.j2xml.users.requireReset = ' . $this->params->get('requireReset', 1) . ';');
 	}
 
 	/**
@@ -103,63 +110,82 @@ class plgJ2xmlUsers extends JPlugin
 	 *        	
 	 * @return boolean
 	 */
-	public function onContentPrepareData($context, &$data)
+	public function onContentPrepareData ($context, &$data)
 	{
 		JLog::add(new JLogEntry(__METHOD__, JLog::DEBUG, 'plg_j2xml_users'));
 		
-		if (version_compare(Version::getFullVersion(), '19.2.323') == - 1) {
-			JLog::add(new JLogEntry(JText::_('PLG_J2XML_USERS') . ' ' . JText::_('PLG_J2XML_USERS_MSG_REQUIREMENTS_LIB'), JLOG::WARNING, 'plg_j2xml_users'));
+		if (version_compare(Version::getFullVersion(), '19.2.323') == - 1)
+		{
+			JLog::add(
+					new JLogEntry(JText::_('PLG_J2XML_USERS') . ' ' . JText::_('PLG_J2XML_USERS_MSG_REQUIREMENTS_LIB'), JLOG::WARNING,
+							'plg_j2xml_users'));
 			return true;
 		}
 		
 		libxml_use_internal_errors(true);
 		$doc = simplexml_load_string($data);
-		if ($doc) {
+		if ($doc)
+		{
 			JLog::add(new JLogEntry('XML file', JLog::DEBUG, 'plg_j2xml_users'));
 			return true;
 		}
 		
 		// Rearrange this array to change the search priority of delimiters
 		$delimiters = array(
-			'tab' => "\t",
-			'semicolon' => ";",
-			'colon' => ","
+				'tab' => "\t",
+				'semicolon' => ";",
+				'colon' => ","
 		);
 		$lines = explode(PHP_EOL, $data);
 		$line = array();
 		$header = array_shift($lines);
-		foreach ($delimiters as $key => $value) {
+		foreach ($delimiters as $key => $value)
+		{
 			$line[$value] = count(explode($value, $header)) - 1;
 		}
 		$delimiter = array_search(max($line), $line);
 		
 		$cols = array();
 		$item = str_getcsv($header, $delimiter, '"', '#');
-		foreach ($item as $i => $v) {
+		foreach ($item as $i => $v)
+		{
 			$name = strtolower($v);
-			if ($name == 'groups') {
+			if ($name == 'groups')
+			{
 				$cols['groups'] = $i;
-			} elseif (($name == 'group') || (substr($name, 0, 6) == 'group.')) {
-				if (! isset($cols['group'])) {
+			}
+			elseif (($name == 'group') || (substr($name, 0, 6) == 'group.'))
+			{
+				if (! isset($cols['group']))
+				{
 					$cols['group'] = array();
 				}
 				$cols['group'][] = $i;
-			} elseif (substr($name, 0, 6) == 'field.') {
-				if (! isset($cols['fields'])) {
+			}
+			elseif (substr($name, 0, 6) == 'field.')
+			{
+				if (! isset($cols['fields']))
+				{
 					$cols['fields'] = array();
 				}
 				$cols['fields'][substr($v, 6)] = $i;
-			} elseif (substr($name, 0, 8) == 'profile.') {
-				if (! isset($cols['profiles'])) {
+			}
+			elseif (substr($name, 0, 8) == 'profile.')
+			{
+				if (! isset($cols['profiles']))
+				{
 					$cols['profiles'] = array();
 				}
 				$cols['profiles'][substr($v, 8)] = $i;
-			} else {
+			}
+			else
+			{
 				$cols[$name] = $i;
 			}
 		}
 		
-		if (! isset($cols['username']) || (! isset($cols['name'])) || (! isset($cols['email']))) {
+		if (! isset($cols['username']) || (! isset($cols['name'])) || (! isset($cols['email'])))
+		{
 			JLog::add(new JLogEntry('invalid CSV file', JLog::DEBUG, 'plg_j2xml_users'));
 			return true;
 		}
@@ -169,18 +195,25 @@ class plgJ2xmlUsers extends JPlugin
 		JLog::add(new JLogEntry('new usertype: ' . $new_usertype, JLog::DEBUG, 'plg_j2xml_users'));
 		
 		$xml = '';
-		foreach ($lines as $line) {
-			if ($line) {
+		foreach ($lines as $line)
+		{
+			if ($line)
+			{
 				JLog::add(new JLogEntry('line: ' . $line, JLog::DEBUG, 'plg_j2xml_users'));
 				$item = str_getcsv($line, $delimiter, '"', '#');
 				JLog::add(new JLogEntry(print_r($item, true), JLog::DEBUG, 'plg_j2xml_users'));
 				
-				foreach ($cols as $k => $v) {
-					if (is_array($v)) {
-						foreach ($v as $k1 => $v1) {
+				foreach ($cols as $k => $v)
+				{
+					if (is_array($v))
+					{
+						foreach ($v as $k1 => $v1)
+						{
 							JLog::add(new JLogEntry($k . '.' . $k1 . ': ' . $item[$v1], JLog::DEBUG, 'plg_j2xml_users'));
 						}
-					} else {
+					}
+					else
+					{
 						JLog::add(new JLogEntry($k . ': ' . $item[$v], JLog::DEBUG, 'plg_j2xml_users'));
 					}
 				}
@@ -189,11 +222,16 @@ class plgJ2xmlUsers extends JPlugin
 				$xml .= "<name><![CDATA[" . $item[$cols['name']] . "]]></name>\n";
 				$xml .= "<username><![CDATA[" . $item[$cols['username']] . "]]></username>\n";
 				$xml .= "<email><![CDATA[" . $item[$cols['email']] . "]]></email>\n";
-				if (isset($cols['password']) && isset($item[$cols['password']]) && $item[$cols['password']]) {
+				if (isset($cols['password']) && isset($item[$cols['password']]) && $item[$cols['password']])
+				{
 					$xml .= "<password><![CDATA[{$item[$cols['password']]}]]></password>\n";
-				} elseif (isset($cols['password_clear']) && isset($item[$cols['password_clear']]) && $item[$cols['password_clear']]) {
+				}
+				elseif (isset($cols['password_clear']) && isset($item[$cols['password_clear']]) && $item[$cols['password_clear']])
+				{
 					$xml .= "<password_clear><![CDATA[{$item[$cols['password_clear']]}]]></password_clear>\n";
-				} else {
+				}
+				else
+				{
 					$password_clear = JUserHelper::genRandomPassword();
 					$xml .= "<password_clear><![CDATA[{$password_clear}]]></password_clear>\n";
 				}
@@ -207,97 +245,143 @@ class plgJ2xmlUsers extends JPlugin
 				$xml .= "<resetCount>0</resetCount>\n";
 				$xml .= "<otpKey/>\n";
 				$xml .= "<otep/>\n";
-				if (isset($cols['requirereset']) && ! is_null($item[$cols['requirereset']])) {
-					$xml .= "<requireReset>{$item[$cols['requirereset']]}</requireReset>\n";
-				} else {
+				if (! isset($cols['requirereset']))
+				{
 					$xml .= "<requireReset>{$this->params->get('requireReset', 1)}</requireReset>\n";
 				}
-				
-				if (isset($cols['groups']) || isset($cols['group'])) {
+				elseif (is_null($item[$cols['requirereset']]))
+				{
+					$xml .= "<requireReset>{$this->params->get('requireReset', 1)}</requireReset>\n";
+				}
+				elseif ($item[$cols['requirereset']] == 0)
+				{
+					$xml .= "<requireReset>0</requireReset>\n";
+				}
+				elseif ($item[$cols['requirereset']] == 1)
+				{
+					$xml .= "<requireReset>1</requireReset>\n";
+				}
+				else
+				{
+					$xml .= "<requireReset>{$this->params->get('requireReset', 1)}</requireReset>\n";
+				}
+				if (isset($cols['groups']) || isset($cols['group']))
+				{
 					JLog::add(new JLogEntry('processing groups...', JLog::DEBUG, 'plg_j2xml_users'));
 					$groups = array();
-					if (isset($cols['groups'])) {
-						foreach (json_decode($item[$cols['groups']], true) as $v) {
+					if (isset($cols['groups']))
+					{
+						foreach (json_decode($item[$cols['groups']], true) as $v)
+						{
 							$groups[] = json_encode($v);
 						}
 					}
-					if (isset($cols['group'])) {
-						foreach ($cols['group'] as $i) {
-							if (isset($item[$i]) && $item[$i]) {
+					if (isset($cols['group']))
+					{
+						foreach ($cols['group'] as $i)
+						{
+							if (isset($item[$i]) && $item[$i])
+							{
 								$groups[] = $item[$i];
 							}
 						}
 					}
 					
 					$grouplist = '';
-					foreach (array_unique($groups) as $group) {
+					foreach (array_unique($groups) as $group)
+					{
 						$grouplist .= "<group><![CDATA[{$group}]]></group>\n";
 					}
-					if (count($groups) > 1) {
+					if (count($groups) > 1)
+					{
 						$xml .= "<grouplist>\n{$grouplist}</grouplist>\n";
-					} else {
+					}
+					else
+					{
 						$xml .= $grouplist;
 					}
-				} else {
+				}
+				else
+				{
 					JLog::add(new JLogEntry('default group: ' . $new_usertype, JLog::DEBUG, 'plg_j2xml_users'));
 					$xml .= "<group>{$new_usertype}</group>\n";
 				}
 				
-				if (isset($cols['fields'])) {
+				if (isset($cols['fields']))
+				{
 					JLog::add(new JLogEntry('processing fields...', JLog::DEBUG, 'plg_j2xml_users'));
 					JLog::add(new JLogEntry(print_r($cols['fields'], true), JLog::DEBUG, 'plg_j2xml_users'));
 					$n = 0;
 					$fieldlist = '';
-					foreach ($cols['fields'] as $k => $i) {
-						if (isset($item[$i]) && $item[$i]) {
+					foreach ($cols['fields'] as $k => $i)
+					{
+						if (isset($item[$i]) && $item[$i])
+						{
 							JLog::add(new JLogEntry($k . ': ' . $item[$i], JLog::DEBUG, 'plg_j2xml_users'));
 							$n ++;
 							$fieldlist .= "<field>\n";
 							$fieldlist .= "<name><![CDATA[{$k}]]></name>\n";
-							if (is_numeric($item[$i])) {
+							if (is_numeric($item[$i]))
+							{
 								$fieldlist .= "<value>{$item[$i]}</value>\n";
-							}elseif (strtotime($item[$i])) {
+							}
+							elseif (strtotime($item[$i]))
+							{
 								$date = new JDate($item[$i]);
 								$timeZone = new DateTimeZone(JFactory::getApplication()->get('offset'));
 								$date->setTimeZone($timeZone);
 								$fieldlist .= "<value><![CDATA[" . $date->toSql() . "]]></value>\n";
-							} else {
+							}
+							else
+							{
 								$fieldlist .= "<value><![CDATA[" . json_encode($item[$i]) . "]]></value>\n";
 							}
 							$fieldlist .= "</field>\n";
 						}
 					}
-					if ($n > 1) {
+					if ($n > 1)
+					{
 						$xml .= "<fieldlist>\n{$fieldlist}</fieldlist>\n";
-					} elseif ($n == 1) {
+					}
+					elseif ($n == 1)
+					{
 						$xml .= $fieldlist;
 					}
 				}
 				
-				if (isset($cols['profiles'])) {
+				if (isset($cols['profiles']))
+				{
 					JLog::add(new JLogEntry('processing profiles...', JLog::DEBUG, 'plg_j2xml_users'));
 					JLog::add(new JLogEntry(print_r($cols['profiles'], true), JLog::DEBUG, 'plg_j2xml_users'));
 					$n = 0;
 					$profilelist = '';
-					foreach ($cols['profiles'] as $k => $i) {
+					foreach ($cols['profiles'] as $k => $i)
+					{
 						JLog::add(new JLogEntry($k . '[' . $i . '] = ' . $item[$i], JLog::DEBUG, 'plg_j2xml_users'));
-						if (isset($item[$i]) && $item[$i]) {
+						if (isset($item[$i]) && $item[$i])
+						{
 							JLog::add(new JLogEntry($k . ': ' . $item[$i], JLog::DEBUG, 'plg_j2xml_users'));
 							
 							$n ++;
 							$profilelist .= "<profile>\n";
 							$profilelist .= "<name><![CDATA[{$k}]]></name>\n";
-							if (is_numeric($item[$i])) {
+							if (is_numeric($item[$i]))
+							{
 								$profilelist .= "<value>{$item[$i]}</value>\n";
-							} else {
+							}
+							else
+							{
 								$profilelist .= "<value><![CDATA[" . json_encode($item[$i]) . "]]></value>\n";
 							}
 							$profilelist .= "</profile>\n";
 						}
 					}
-					if ($n > 1) {
+					if ($n > 1)
+					{
 						$xml .= "<profilelist>\n{$profilelist}</profilelist>\n";
-					} elseif ($n == 1) {
+					}
+					elseif ($n == 1)
+					{
 						$xml .= $profilelist;
 					}
 				}
@@ -318,17 +402,19 @@ class plgJ2xmlUsers extends JPlugin
 	 *
 	 * @access public
 	 */
-	public function onAfterDispatch()
+	public function onAfterDispatch ()
 	{
 		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
 		
 		$app = JFactory::getApplication();
-		if ($app->getName() != 'administrator') {
+		if ($app->getName() != 'administrator')
+		{
 			return true;
 		}
 		
 		$enabled = JComponentHelper::getComponent('com_j2xml', true);
-		if (! $enabled->enabled) {
+		if (! $enabled->enabled)
+		{
 			return true;
 		}
 		
@@ -336,7 +422,8 @@ class plgJ2xmlUsers extends JPlugin
 		$view = JRequest::getVar('view');
 		
 		$cparams = JComponentHelper::getParams('com_j2xml');
-		if ($cparams->get('ajax', false) && ($option == 'com_j2xml') && (! $view || $view == 'cpanel')) {
+		if ($cparams->get('ajax', false) && ($option == 'com_j2xml') && (! $view || $view == 'cpanel'))
+		{
 			$doc = JFactory::getDocument();
 			$min = ($this->params->get('debug', $cparams->get('debug', 0)) ? '' : '.min');
 			JLog::add(new JLogEntry("loading CSVToArray{$min}.js...", JLOG::DEBUG, 'plg_j2xml_users'));
