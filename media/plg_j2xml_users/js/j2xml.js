@@ -77,29 +77,23 @@ eshiol.j2xml.convert
 
 			for (var i = 0; i < header.length; i++) {
 				console.log(header[i] + ': ' + i);
-				if ((header[i] == 'group') || (header[i].substring(0, 6) == 'group.'))
-				{
+				if ((header[i] == 'group')
+						|| (header[i].substring(0, 6) == 'group.')) {
 					if (typeof cols['group'] === 'undefined') {
 						cols['group'] = [];
 					}
 					cols['group'].push(i);
-				}
-				else if (header[i].substring(0, 6) == 'field.')
-				{
+				} else if (header[i].substring(0, 6) == 'field.') {
 					if (typeof cols['fields'] === 'undefined') {
 						cols['fields'] = [];
 					}
 					cols['fields'][header[i].substring(6)] = i;
-				}
-				else if (header[i].substring(0, 8) == 'profile.')
-				{
+				} else if (header[i].substring(0, 8) == 'profile.') {
 					if (typeof cols['profiles'] === 'undefined') {
 						cols['profiles'] = [];
 					}
 					cols['profiles'][header[i].substring(8)] = i;
-				}
-				else
-				{
+				} else {
 					cols[header[i]] = i;
 				}
 			}
@@ -144,7 +138,7 @@ eshiol.j2xml.convert
 							+ "]]></password_clear>\n";
 				} else {
 					password_clear = Math.random() // Generate random number,
-													// eg: 0.123456
+					// eg: 0.123456
 					.toString(36) // Convert to base-36 : "0.4fzyo82mvyr"
 					.slice(-8); // Cut off last 8 characters : "yo82mvyr"
 					x += "\t\t<password_clear><![CDATA[" + password_clear
@@ -161,87 +155,100 @@ eshiol.j2xml.convert
 				x += "\t\t<resetCount>0</resetCount>\n";
 				x += "\t\t<otpKey/>\n";
 				x += "\t\t<otep/>\n";
-				
+
 				var groups = [];
-				if (cols['groups'] !== undefined)
-				{
+				if (cols['groups'] !== undefined) {
 					JSON.parse(csv[i][cols['groups']]).forEach(function(group) {
-						groups.push('["' + group.join('","') + '"]');
-					});					
+						if (Array.isArray(group)) {
+							groups.push(JSON.stringify(group));
+						} else {
+							groups.push(group);
+						}
+					});
 				}
-				if (cols['group'] !== undefined)
-				{
+				if (cols['group'] !== undefined) {
 					for (var j = 0; j < cols['group'].length; j++) {
 						groups.push(csv[i][cols['group'][j]]);
 					}
 				}
-				groups = groups.filter(function(value, index, self) {
-				    return self.indexOf(value) === index;
-				});
-				if (groups.length == 1)
-				{
-					x += "\t<group><![CDATA[" + groups[0] + "]]></group>\n";
-				} 
-				else if (groups.length > 1)
-				{
-					x += "\t\t<grouplist>\n";
-					groups.forEach(function(group) {
-						x += "\t\t\t<group><![CDATA[" + group + "]]></group>\n";
+				groups = (function(a) {
+					var seen = {};
+					return a.filter(function(item) {
+						return seen.hasOwnProperty(item) ? false
+								: (seen[item] = true);
 					});
+				})(groups);
+				if (groups.length == 1) {
+					x += "\t<group><![CDATA[" + groups[0] + "]]></group>\n";
+				} else if (groups.length > 1) {
+					x += "\t\t<grouplist>\n";
+					groups
+							.forEach(function(group) {
+								x += "\t\t\t<group><![CDATA[" + group
+										+ "]]></group>\n";
+							});
 					x += "\t\t</grouplist>\n";
 				}
 
 				var fields = [];
-				if (cols['fields'] !== undefined)
-				{
+				if (cols['fields'] !== undefined) {
 					Object.keys(cols['fields']).forEach(function(key, index) {
 						fields[key] = csv[i][this[key]];
 					}, cols['fields']);
 				}
 				var n = Object.keys(fields).length;
-				if (n == 1)
-				{
-					Object.keys(cols['fields']).forEach(function(key, index) {
-						x += "\t\t<field>\n";
-						x += "\t\t\t<name><![CDATA[[\"" + key + "\"]]]></name>\n";
-						x += "\t\t\t<value><![CDATA[[\"" + this[key] + "\"]]]></value>\n";
-						x += "\t\t</field>\n";
-					}, fields);
+				if (n == 1) {
+					Object.keys(cols['fields']).forEach(
+							function(key, index) {
+								x += "\t\t<field>\n";
+								x += "\t\t\t<name><![CDATA[[\"" + key
+										+ "\"]]]></name>\n";
+								x += "\t\t\t<value><![CDATA[[\"" + this[key]
+										+ "\"]]]></value>\n";
+								x += "\t\t</field>\n";
+							}, fields);
 				} else if (n > 1) {
 					x += "\t\t<fieldlist>\n";
-					Object.keys(cols['fields']).forEach(function(key, index) {
-						x += "\t\t\t<field>\n";
-						x += "\t\t\t\t<name><![CDATA[[\"" + key + "\"]]]></name>\n";
-						x += "\t\t\t\t<value><![CDATA[[\"" + this[key] + "\"]]]></value>\n";
-						x += "\t\t\t</field>\n";
-					}, fields);
+					Object.keys(cols['fields']).forEach(
+							function(key, index) {
+								x += "\t\t\t<field>\n";
+								x += "\t\t\t\t<name><![CDATA[[\"" + key
+										+ "\"]]]></name>\n";
+								x += "\t\t\t\t<value><![CDATA[[\"" + this[key]
+										+ "\"]]]></value>\n";
+								x += "\t\t\t</field>\n";
+							}, fields);
 					x += "\t\t</fieldlist>\n";
 				}
 
 				var profiles = [];
-				if (cols['profiles'] !== undefined)
-				{
+				if (cols['profiles'] !== undefined) {
 					Object.keys(cols['profiles']).forEach(function(key, index) {
 						profiles[key] = csv[i][this[key]];
 					}, cols['profiles']);
 				}
 				var n = Object.keys(profiles).length;
-				if (n == 1)
-				{
-					Object.keys(cols['profiles']).forEach(function(key, index) {
-						x += "\t\t<profile>\n";
-						x += "\t\t\t<name><![CDATA[[\"" + key + "\"]]]></name>\n";
-						x += "\t\t\t<value><![CDATA[[\"" + this[key] + "\"]]]></value>\n";
-						x += "\t\t</profile>\n";
-					}, profiles);
+				if (n == 1) {
+					Object.keys(cols['profiles']).forEach(
+							function(key, index) {
+								x += "\t\t<profile>\n";
+								x += "\t\t\t<name><![CDATA[[\"" + key
+										+ "\"]]]></name>\n";
+								x += "\t\t\t<value><![CDATA[[\"" + this[key]
+										+ "\"]]]></value>\n";
+								x += "\t\t</profile>\n";
+							}, profiles);
 				} else if (n > 1) {
 					x += "\t\t<profilelist>\n";
-					Object.keys(cols['profiles']).forEach(function(key, index) {
-						x += "\t\t\t<profile>\n";
-						x += "\t\t\t\t<name><![CDATA[[\"" + key + "\"]]]></name>\n";
-						x += "\t\t\t\t<value><![CDATA[[\"" + this[key] + "\"]]]></value>\n";
-						x += "\t\t\t</profile>\n";
-					}, profiles);
+					Object.keys(cols['profiles']).forEach(
+							function(key, index) {
+								x += "\t\t\t<profile>\n";
+								x += "\t\t\t\t<name><![CDATA[[\"" + key
+										+ "\"]]]></name>\n";
+								x += "\t\t\t\t<value><![CDATA[[\"" + this[key]
+										+ "\"]]]></value>\n";
+								x += "\t\t\t</profile>\n";
+							}, profiles);
 					x += "\t\t</profilelist>\n";
 				}
 
@@ -249,5 +256,6 @@ eshiol.j2xml.convert
 				xml += x;
 			}
 
-			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<j2xml version=\"19.2.0\">\n" + xml + "</j2xml>";
+			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<j2xml version=\"19.2.0\">\n"
+					+ xml + "</j2xml>";
 		});

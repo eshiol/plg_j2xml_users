@@ -137,7 +137,9 @@ class plgJ2xmlUsers extends JPlugin
 		$item = str_getcsv($header, $delimiter, '"', '#');
 		foreach ($item as $i => $v) {
 			$name = strtolower($v);
-			if (($name == 'group') || (substr($name, 0, 6) == 'group.')) {
+			if ($name == 'groups') {
+				$cols['groups'] = $i;
+			} elseif (($name == 'group') || (substr($name, 0, 6) == 'group.')) {
 				if (! isset($cols['group'])) {
 					$cols['group'] = array();
 				}
@@ -216,9 +218,8 @@ class plgJ2xmlUsers extends JPlugin
 					$groups = array();
 					if (isset($cols['groups'])) {
 						foreach (json_decode($item[$cols['groups']], true) as $v) {
-							$groups[] = '["' . implode($v, '","') . '"]';
+							$groups[] = json_encode($v);
 						}
-						
 					}
 					if (isset($cols['group'])) {
 						foreach ($cols['group'] as $i) {
