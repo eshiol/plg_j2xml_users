@@ -72,7 +72,7 @@ class plgJ2xmlUsers extends JPlugin
 			JLog::addLogger(array(
 					'logger' => 'echo',
 					'extension' => 'plg_j2xml_users'
-			), JLOG::ALL & ~ JLOG::DEBUG, array(
+			), JLog::ALL & ~ JLog::DEBUG, array(
 					'plg_j2xml_users'
 			));
 		}
@@ -81,7 +81,7 @@ class plgJ2xmlUsers extends JPlugin
 			JLog::addLogger(array(
 					'logger' => $this->params->get('logger', 'messagequeue'),
 					'extension' => 'plg_j2xml_users'
-			), JLOG::ALL & ~ JLOG::DEBUG, array(
+			), JLog::ALL & ~ JLog::DEBUG, array(
 					'plg_j2xml_users'
 			));
 			if ($this->params->get('phpconsole') && class_exists('JLogLoggerPhpconsole'))
@@ -89,13 +89,13 @@ class plgJ2xmlUsers extends JPlugin
 				JLog::addLogger(array(
 						'logger' => 'phpconsole',
 						'extension' => 'plg_j2xml_users_phpconsole'
-				), JLOG::DEBUG, array(
+				), JLog::DEBUG, array(
 						'plg_j2xml_users'
 				));
 			}
 		}
 		
-		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
+		JLog::add(new JLogEntry(__METHOD__, JLog::DEBUG, 'plg_j2xml_users'));
 
 		if (JComponentHelper::getParams('com_j2xml')->get('ajax'))
 		{
@@ -120,7 +120,7 @@ class plgJ2xmlUsers extends JPlugin
 		if (version_compare(Version::getFullVersion(), '19.2.323') == - 1)
 		{
 			JLog::add(
-					new JLogEntry(JText::_('PLG_J2XML_USERS') . ' ' . JText::_('PLG_J2XML_USERS_MSG_REQUIREMENTS_LIB'), JLOG::WARNING,
+					new JLogEntry(JText::_('PLG_J2XML_USERS') . ' ' . JText::_('PLG_J2XML_USERS_MSG_REQUIREMENTS_LIB'), JLog::WARNING,
 							'plg_j2xml_users'));
 			return true;
 		}
@@ -407,7 +407,7 @@ class plgJ2xmlUsers extends JPlugin
 	 */
 	public function onAfterDispatch ()
 	{
-		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
+		JLog::add(new JLogEntry(__METHOD__, JLog::DEBUG, 'plg_j2xml_users'));
 		
 		$app = JFactory::getApplication();
 		if ($app->getName() != 'administrator')
@@ -429,9 +429,9 @@ class plgJ2xmlUsers extends JPlugin
 		{
 			$doc = JFactory::getDocument();
 			$min = ($this->params->get('debug', $cparams->get('debug', 0)) ? '' : '.min');
-			JLog::add(new JLogEntry("loading CSVToArray{$min}.js...", JLOG::DEBUG, 'plg_j2xml_users'));
+			JLog::add(new JLogEntry("loading CSVToArray{$min}.js...", JLog::DEBUG, 'plg_j2xml_users'));
 			$doc->addScript("../media/plg_j2xml_users/js/CSVToArray{$min}.js");
-			JLog::add(new JLogEntry("loading j2xml{$min}.js...", JLOG::DEBUG, 'plg_j2xml_users'));
+			JLog::add(new JLogEntry("loading j2xml{$min}.js...", JLog::DEBUG, 'plg_j2xml_users'));
 			$doc->addScript("../media/plg_j2xml_users/js/j2xml{$min}.js");
 		}
 		return true;
