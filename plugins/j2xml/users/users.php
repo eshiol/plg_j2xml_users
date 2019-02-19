@@ -96,8 +96,11 @@ class plgJ2xmlUsers extends JPlugin
 		}
 		
 		JLog::add(new JLogEntry(__METHOD__, JLOG::DEBUG, 'plg_j2xml_users'));
-		
-		JFactory::getDocument()->addScriptDeclaration('eshiol.j2xml.users.requireReset = ' . $this->params->get('requireReset', 1) . ';');
+
+		if (JComponentHelper::getParams('com_j2xml')->get('ajax'))
+		{
+			JFactory::getDocument()->addScriptDeclaration('eshiol.j2xml.users.requireReset = ' . $this->params->get('requireReset', 1) . ';');
+		}
 	}
 
 	/**
