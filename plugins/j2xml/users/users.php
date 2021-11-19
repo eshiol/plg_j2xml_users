@@ -32,7 +32,7 @@ jimport('joomla.user.helper');
  *
  * Convert CSV to J2XML
  *
- * @version 3.7.9
+ * @version 3.7.10
  * @since 3.0.0
  */
 class plgJ2xmlUsers extends JPlugin
@@ -139,7 +139,9 @@ class plgJ2xmlUsers extends JPlugin
 				'semicolon' => ";",
 				'colon' => ","
 		);
-		$lines = explode(PHP_EOL, $data);
+		// $lines = explode(PHP_EOL, $data);
+		$lines = array_values(array_filter(explode("\n", str_replace("\r", '', $data))));
+
 		$line = array();
 		$header = array_shift($lines);
 		foreach ($delimiters as $key => $value)
@@ -337,7 +339,7 @@ class plgJ2xmlUsers extends JPlugin
 							}
 							else
 							{
-								$fieldlist .= "<value><![CDATA[" . json_encode($item[$i]) . "]]></value>\n";
+								$fieldlist .= "<value><![CDATA[" . $item[$i] . "]]></value>\n";
 							}
 							$fieldlist .= "</field>\n";
 						}
